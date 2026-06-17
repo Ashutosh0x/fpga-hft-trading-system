@@ -1,0 +1,26 @@
+# Simulation outputs
+*.vvp
+*.vcd
+*.wlf
+*.log
+
+# Vivado
+*.jou
+*.str
+*.xpr
+.Xil/
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+
+# Build
+*.bit
+*.bin
+*.mcs
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
