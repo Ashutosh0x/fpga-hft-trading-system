@@ -5,6 +5,7 @@
 [![Release](https://img.shields.io/github/v/release/Ashutosh0x/fpga-hft-trading-system?color=blue)](https://github.com/Ashutosh0x/fpga-hft-trading-system/releases)
 
 ### Tech Stack
+<img width="1536" height="1024" alt="ChatGPT Image Jun 17, 2026, 09_59_03 PM" src="https://github.com/user-attachments/assets/88b8e6e0-3e4c-4c5a-a8dd-6f2b88ef0c31" />
 
 ![SystemVerilog](https://img.shields.io/badge/SystemVerilog-FF6600?style=for-the-badge&logo=verilog&logoColor=white)
 ![FPGA](https://img.shields.io/badge/FPGA-AMD%20Xilinx-E31937?style=for-the-badge&logo=amd&logoColor=white)
