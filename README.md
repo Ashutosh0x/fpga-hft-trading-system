@@ -1,8 +1,51 @@
 # FPGA High-Frequency Trading System
 
+[![CI](https://github.com/Ashutosh0x/fpga-hft-trading-system/actions/workflows/ci.yml/badge.svg)](https://github.com/Ashutosh0x/fpga-hft-trading-system/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/Ashutosh0x/fpga-hft-trading-system?color=blue)](https://github.com/Ashutosh0x/fpga-hft-trading-system/releases)
+
+### Tech Stack
+
+![SystemVerilog](https://img.shields.io/badge/SystemVerilog-FF6600?style=for-the-badge&logo=verilog&logoColor=white)
+![FPGA](https://img.shields.io/badge/FPGA-AMD%20Xilinx-E31937?style=for-the-badge&logo=amd&logoColor=white)
+![Vivado](https://img.shields.io/badge/Vivado-2024.1-ED1C24?style=for-the-badge&logo=xilinx&logoColor=white)
+![Verilator](https://img.shields.io/badge/Verilator-5.x-4B8BBE?style=for-the-badge&logo=v&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![AXI](https://img.shields.io/badge/Protocol-AXI--Stream-6A1B9A?style=for-the-badge)
+![ITCH](https://img.shields.io/badge/Protocol-NASDAQ%20ITCH%205.0-005EB8?style=for-the-badge)
+![Neural Network](https://img.shields.io/badge/AI-INT4%2FINT8%20MLP-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Transformer](https://img.shields.io/badge/AI-Linear%20Attention-9C27B0?style=for-the-badge)
+
+### Target Hardware
+
+![Alveo UL3524](https://img.shields.io/badge/AMD-Alveo%20UL3524-ED1C24?style=for-the-badge&logo=amd&logoColor=white)
+![644 MHz](https://img.shields.io/badge/Clock-644%20MHz-00C853?style=for-the-badge)
+![Virtex UltraScale+](https://img.shields.io/badge/FPGA-Virtex%20UltraScale+-E31937?style=for-the-badge&logo=amd&logoColor=white)
+![10GbE](https://img.shields.io/badge/Network-10GbE%20SFP28-1565C0?style=for-the-badge)
+![PCIe](https://img.shields.io/badge/Host-PCIe%20Gen4%20x16-616161?style=for-the-badge)
+
+### Industry Context -- Firms Working on These Problems
+
+![Citadel Securities](https://img.shields.io/badge/Citadel%20Securities-FPGA%20Trading-000000?style=for-the-badge)
+![Jump Trading](https://img.shields.io/badge/Jump%20Trading-FPGA%20%2B%20AI-1A237E?style=for-the-badge)
+![Hudson River Trading](https://img.shields.io/badge/Hudson%20River%20Trading-AI%20Inference%20on%20FPGA-004D40?style=for-the-badge)
+![Exegy](https://img.shields.io/badge/Exegy%20%2F%20AMD-13.9ns%20STAC--T0%20Record-ED1C24?style=for-the-badge&logo=amd&logoColor=white)
+![DRW Trading](https://img.shields.io/badge/DRW%20Trading-Low%20Latency-37474F?style=for-the-badge)
+![Jane Street](https://img.shields.io/badge/Jane%20Street-Quantitative%20Trading-0D47A1?style=for-the-badge)
+![IMC Trading](https://img.shields.io/badge/IMC%20Trading-Market%20Making-FF8F00?style=for-the-badge)
+![Optiver](https://img.shields.io/badge/Optiver-Options%20Market%20Making-1B5E20?style=for-the-badge)
+
+### Research Paper
+
+[![Research Paper](https://img.shields.io/badge/Research%20Paper-PDF-EC1C24?style=for-the-badge&logo=adobe-acrobat-reader&logoColor=white)](docs/fpga_hft_inline_neural_inference_2026.pdf)
+[![LaTeX Source](https://img.shields.io/badge/LaTeX-Source-008080?style=for-the-badge&logo=latex&logoColor=white)](docs/paper.tex)
+
+---
+
 A complete, synthesizable SystemVerilog implementation of an ultra-low-latency trading system targeting the AMD Alveo UL3524 FPGA at 644 MHz. This project implements five of the seven frontier problems in FPGA trading as of June 2026, including inline neural network inference, transformer attention, zero-jitter deterministic AI, dynamic session override, and full-stack SmartNIC integration.
 
-**Total codebase:** 19 RTL modules, 2 testbenches, approximately 4,500 lines of SystemVerilog.
+**Total codebase:** 19 RTL modules, 2 testbenches, approximately 5,200 lines of SystemVerilog.
 
 ---
 
