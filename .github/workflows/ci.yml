@@ -1,0 +1,100 @@
+name: FPGA CI - Lint and Simulate
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  verilator-lint:
+    name: Verilator Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Verilator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator
+
+      - name: Lint all RTL modules
+        run: |
+          verilator --lint-only -Wall --timing \
+            rtl/fixed_point_pkg.sv \
+            rtl/ema_calculator.sv \
+            rtl/speculative_parser.sv \
+            rtl/market_data_parser.sv \
+            rtl/cuckoo_hash_table.sv \
+            rtl/order_book.sv \
+            rtl/feature_extractor.sv \
+            rtl/neural_inference.sv \
+            rtl/transformer_attention.sv \
+            rtl/deterministic_wrapper.sv \
+            rtl/avellaneda_stoikov.sv \
+            rtl/market_maker.sv \
+            rtl/stat_arb.sv \
+            rtl/latency_arbiter.sv \
+            rtl/risk_manager.sv \
+            rtl/order_generator.sv \
+            rtl/session_override.sv \
+            rtl/trading_system_top.sv \
+            rtl/smartnic_top.sv
+
+  iverilog-simulate:
+    name: Icarus Verilog Simulation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Compile basic testbench
+        run: |
+          iverilog -g2012 -o sim_basic.vvp \
+            rtl/fixed_point_pkg.sv \
+            rtl/ema_calculator.sv \
+            rtl/market_data_parser.sv \
+            rtl/order_book.sv \
+            rtl/market_maker.sv \
+            rtl/risk_manager.sv \
+            rtl/order_generator.sv \
+            rtl/trading_system_top.sv \
+            tb/tb_trading_system.sv
+
+      - name: Run basic simulation
+        run: vvp sim_basic.vvp
+
+      - name: Compile SmartNIC testbench
+        run: |
+          iverilog -g2012 -o sim_smartnic.vvp \
+            rtl/fixed_point_pkg.sv \
+            rtl/ema_calculator.sv \
+            rtl/speculative_parser.sv \
+            rtl/order_book.sv \
+            rtl/feature_extractor.sv \
+            rtl/neural_inference.sv \
+            rtl/deterministic_wrapper.sv \
+            rtl/avellaneda_stoikov.sv \
+            rtl/market_maker.sv \
+            rtl/risk_manager.sv \
+            rtl/order_generator.sv \
+            rtl/session_override.sv \
+            rtl/smartnic_top.sv \
+            tb/tb_smartnic.sv
+
+      - name: Run SmartNIC simulation
+        run: vvp sim_smartnic.vvp
+
+      - name: Upload waveforms
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: simulation-waveforms
+          path: "*.vcd"
+          retention-days: 30
