@@ -83,13 +83,13 @@ module feature_extractor
             ema_vol        <= '0;
             initialized    <= 1'b0;
         end else if (enable && tob_valid && tob.valid) begin
-            automatic logic signed [31:0] mid_s = $signed({1'b0, tob.mid_price});
-            automatic logic signed [31:0] spread_s = $signed({1'b0, tob.best_ask}) -
+            logic signed [31:0] mid_s = $signed({1'b0, tob.mid_price});
+            logic signed [31:0] spread_s = $signed({1'b0, tob.best_ask}) -
                                                      $signed({1'b0, tob.best_bid});
-            automatic logic signed [31:0] ret = mid_s - $signed({1'b0, prev_mid});
-            automatic logic signed [31:0] momentum;
-            automatic logic signed [31:0] imbalance_num;
-            automatic logic signed [31:0] imbalance_den;
+            logic signed [31:0] ret = mid_s - $signed({1'b0, prev_mid});
+            logic signed [31:0] momentum;
+            logic signed [31:0] imbalance_num;
+            logic signed [31:0] imbalance_den;
 
             if (!initialized) begin
                 ema_mid     <= mid_s;

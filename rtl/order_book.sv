@@ -125,14 +125,14 @@ module order_book
                     order_table[hash_order_id(msg_in.order_id)].side     <= msg_in.side;
 
                     if (msg_in.side == SIDE_BID) begin
-                        automatic logic [3:0] lvl = find_bid_level(msg_in.price);
+                        logic [3:0] lvl = find_bid_level(msg_in.price);
                         if (lvl != 4'hF) begin
                             // Level exists — add quantity
                             bid_qtys[lvl]   <= bid_qtys[lvl] + msg_in.quantity;
                             bid_counts[lvl] <= bid_counts[lvl] + 1;
                         end else begin
                             // New level
-                            automatic logic [3:0] empty = find_empty_bid();
+                            logic [3:0] empty = find_empty_bid();
                             if (empty != 4'hF) begin
                                 bid_valid[empty]  <= 1'b1;
                                 bid_prices[empty] <= msg_in.price;
@@ -141,12 +141,12 @@ module order_book
                             end
                         end
                     end else begin
-                        automatic logic [3:0] lvl = find_ask_level(msg_in.price);
+                        logic [3:0] lvl = find_ask_level(msg_in.price);
                         if (lvl != 4'hF) begin
                             ask_qtys[lvl]   <= ask_qtys[lvl] + msg_in.quantity;
                             ask_counts[lvl] <= ask_counts[lvl] + 1;
                         end else begin
-                            automatic logic [3:0] empty = find_empty_ask();
+                            logic [3:0] empty = find_empty_ask();
                             if (empty != 4'hF) begin
                                 ask_valid[empty]  <= 1'b1;
                                 ask_prices[empty] <= msg_in.price;
@@ -160,10 +160,10 @@ module order_book
 
                 // ---- DELETE ORDER ----
                 MSG_DELETE: begin
-                    automatic logic [HASH_BITS-1:0] h = hash_order_id(msg_in.order_id);
+                    logic [HASH_BITS-1:0] h = hash_order_id(msg_in.order_id);
                     if (order_table[h].valid && order_table[h].order_id == msg_in.order_id) begin
                         if (order_table[h].side == SIDE_BID) begin
-                            automatic logic [3:0] lvl = find_bid_level(order_table[h].price);
+                            logic [3:0] lvl = find_bid_level(order_table[h].price);
                             if (lvl != 4'hF) begin
                                 if (bid_qtys[lvl] <= order_table[h].quantity) begin
                                     bid_valid[lvl] <= 1'b0;
@@ -174,7 +174,7 @@ module order_book
                                 end
                             end
                         end else begin
-                            automatic logic [3:0] lvl = find_ask_level(order_table[h].price);
+                            logic [3:0] lvl = find_ask_level(order_table[h].price);
                             if (lvl != 4'hF) begin
                                 if (ask_qtys[lvl] <= order_table[h].quantity) begin
                                     ask_valid[lvl] <= 1'b0;
@@ -192,10 +192,10 @@ module order_book
 
                 // ---- EXECUTE / TRADE ----
                 MSG_EXECUTE, MSG_TRADE: begin
-                    automatic logic [HASH_BITS-1:0] h = hash_order_id(msg_in.order_id);
+                    logic [HASH_BITS-1:0] h = hash_order_id(msg_in.order_id);
                     if (order_table[h].valid) begin
                         if (order_table[h].side == SIDE_BID) begin
-                            automatic logic [3:0] lvl = find_bid_level(order_table[h].price);
+                            logic [3:0] lvl = find_bid_level(order_table[h].price);
                             if (lvl != 4'hF) begin
                                 if (bid_qtys[lvl] <= msg_in.quantity) begin
                                     bid_valid[lvl] <= 1'b0;
@@ -205,7 +205,7 @@ module order_book
                                 end
                             end
                         end else begin
-                            automatic logic [3:0] lvl = find_ask_level(order_table[h].price);
+                            logic [3:0] lvl = find_ask_level(order_table[h].price);
                             if (lvl != 4'hF) begin
                                 if (ask_qtys[lvl] <= msg_in.quantity) begin
                                     ask_valid[lvl] <= 1'b0;

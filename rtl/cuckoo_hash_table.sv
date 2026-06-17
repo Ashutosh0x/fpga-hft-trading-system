@@ -74,7 +74,7 @@ module cuckoo_hash_table
     // ---- Hash Functions (two independent hashes) ----
     // Hash A: XOR-fold with golden ratio mixing
     function automatic logic [ADDR_BITS-1:0] hash_a(input order_id_t key);
-        automatic logic [63:0] mixed;
+        logic [63:0] mixed;
         mixed = key ^ (key >> 17) ^ (key >> 34);
         mixed = mixed * 64'h9E3779B97F4A7C15;  // Golden ratio constant
         return mixed[ADDR_BITS-1:0];
@@ -82,7 +82,7 @@ module cuckoo_hash_table
 
     // Hash B: Different mixing with Fibonacci hashing
     function automatic logic [ADDR_BITS-1:0] hash_b(input order_id_t key);
-        automatic logic [63:0] mixed;
+        logic [63:0] mixed;
         mixed = key ^ (key >> 13) ^ (key >> 29) ^ (key >> 47);
         mixed = mixed * 64'hC4CEB9FE1A85EC53;  // Different constant
         return mixed[ADDR_BITS-1:0];

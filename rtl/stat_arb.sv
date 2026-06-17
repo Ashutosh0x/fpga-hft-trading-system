@@ -106,9 +106,9 @@ module stat_arb
             s1_valid  <= 1'b0;
             s1_spread <= '0;
         end else if (enable && both_valid) begin
-            automatic fp_t price_a_fp = {latched_a[15:0], 16'b0}; // Convert to Q16.16
-            automatic fp_t price_b_fp = {latched_b[15:0], 16'b0};
-            automatic fp_t beta_b     = fp_mul(beta, price_b_fp);
+            fp_t price_a_fp = {latched_a[15:0], 16'b0}; // Convert to Q16.16
+            fp_t price_b_fp = {latched_b[15:0], 16'b0};
+            fp_t beta_b     = fp_mul(beta, price_b_fp);
 
             s1_spread <= price_a_fp - beta_b - alpha;
             s1_valid  <= 1'b1;
@@ -141,7 +141,7 @@ module stat_arb
             spread_dev_sq <= '0;
             dev_sq_valid  <= 1'b0;
         end else if (enable && ema_mean_valid) begin
-            automatic logic signed [31:0] dev = s1_spread - ema_mean_out;
+            logic signed [31:0] dev = s1_spread - ema_mean_out;
             // Approximate square: use fp_mul
             spread_dev_sq <= fp_mul(dev, dev);
             dev_sq_valid  <= 1'b1;
@@ -186,10 +186,10 @@ module stat_arb
             pos           <= POS_FLAT;
             current_zscore <= '0;
         end else if (enable && ema_var_valid) begin
-            automatic logic signed [31:0] dev = s1_spread - ema_mean_out;
-            automatic fp_t dev_sq_now = fp_mul(dev, dev);
-            automatic fp_t entry_boundary = fp_mul(entry_thresh_sq, ema_var_out);
-            automatic fp_t exit_boundary  = fp_mul(exit_thresh_sq, ema_var_out);
+            logic signed [31:0] dev = s1_spread - ema_mean_out;
+            fp_t dev_sq_now = fp_mul(dev, dev);
+            fp_t entry_boundary = fp_mul(entry_thresh_sq, ema_var_out);
+            fp_t exit_boundary  = fp_mul(exit_thresh_sq, ema_var_out);
 
             // Approximate z-score for output (dev / sqrt(var) ≈ dev >> half_var_shift)
             if (ema_var_out != 0)

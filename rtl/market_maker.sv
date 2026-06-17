@@ -76,8 +76,8 @@ module market_maker
             // Weighted mid-price:
             // wmid = (best_bid * ask_qty + best_ask * bid_qty) / (bid_qty + ask_qty)
             // Use 64-bit intermediate to avoid overflow
-            automatic logic [63:0] numerator;
-            automatic logic [31:0] denominator;
+            logic [63:0] numerator;
+            logic [31:0] denominator;
 
             numerator   = ({32'b0, tob.best_bid} * {32'b0, tob.ask_qty}) +
                           ({32'b0, tob.best_ask} * {32'b0, tob.bid_qty});
@@ -110,10 +110,10 @@ module market_maker
             quoting_active <= 1'b0;
         end else if (enable && s1_valid) begin
             // Compute my quote prices
-            automatic price_t half_spread = SPREAD_TARGET >> 1;
-            automatic price_t my_bid_price;
-            automatic price_t my_ask_price;
-            automatic logic   pos_ok;
+            price_t half_spread = SPREAD_TARGET >> 1;
+            price_t my_bid_price;
+            price_t my_ask_price;
+            logic   pos_ok;
 
             // my_bid = wmid - half_spread - skew
             // my_ask = wmid + half_spread - skew
@@ -131,7 +131,7 @@ module market_maker
 
             // Only emit if quote changed by more than MIN_QUOTE_CHANGE
             if (pos_ok) begin
-                automatic logic bid_changed, ask_changed;
+                logic bid_changed, ask_changed;
                 bid_changed = (my_bid_price > prev_my_bid + MIN_QUOTE_CHANGE) ||
                               (my_bid_price + MIN_QUOTE_CHANGE < prev_my_bid) ||
                               (prev_my_bid == 0);

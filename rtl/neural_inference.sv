@@ -140,7 +140,7 @@ module neural_inference
         end else if (enable && features_valid) begin
             for (int j = 0; j < HIDDEN1_DIM; j++) begin
                 // MAC: accumulate all input contributions
-                automatic logic signed [15:0] sum = {{8{b0[j][7]}}, b0[j]};
+                logic signed [15:0] sum = {{8{b0[j][7]}}, b0[j]};
                 for (int i = 0; i < INPUT_DIM; i++) begin
                     // INT4 × INT8 multiply = INT12 result
                     sum = sum + (features[i] * w0[i][j]);
@@ -172,7 +172,7 @@ module neural_inference
             end
         end else if (enable && s1_valid) begin
             for (int j = 0; j < HIDDEN2_DIM; j++) begin
-                automatic logic signed [15:0] sum = {{8{b1[j][7]}}, b1[j]};
+                logic signed [15:0] sum = {{8{b1[j][7]}}, b1[j]};
                 for (int i = 0; i < HIDDEN1_DIM; i++) begin
                     sum = sum + (s1_out[i] * w1[i][j]);
                 end
@@ -202,7 +202,7 @@ module neural_inference
             end
         end else if (enable && s2_valid) begin
             for (int j = 0; j < HIDDEN3_DIM; j++) begin
-                automatic logic signed [15:0] sum = {{8{b2[j][7]}}, b2[j]};
+                logic signed [15:0] sum = {{8{b2[j][7]}}, b2[j]};
                 for (int i = 0; i < HIDDEN2_DIM; i++) begin
                     sum = sum + (s2_out[i] * w2[i][j]);
                 end
@@ -230,9 +230,9 @@ module neural_inference
             s4_valid         <= 1'b0;
         end else if (enable && s3_valid) begin
             // Compute output logits
-            automatic logic signed [15:0] logits [OUTPUT_DIM-1:0];
-            automatic logic signed [15:0] max_val;
-            automatic int max_idx;
+            logic signed [15:0] logits [OUTPUT_DIM-1:0];
+            logic signed [15:0] max_val;
+            int max_idx;
 
             for (int j = 0; j < OUTPUT_DIM; j++) begin
                 logits[j] = {{8{b3[j][7]}}, b3[j]};

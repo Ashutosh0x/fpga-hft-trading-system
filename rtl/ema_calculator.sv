@@ -46,8 +46,8 @@ module ema_calculator
                 initialized <= 1'b1;
             end else begin
                 // EMA update: ema = ema + (x - ema) >> ALPHA_SHIFT
-                automatic logic signed [DATA_WIDTH-1:0] diff;
-                automatic logic signed [DATA_WIDTH-1:0] update;
+                logic signed [DATA_WIDTH-1:0] diff;
+                logic signed [DATA_WIDTH-1:0] update;
                 diff   = data_in - ema_reg;
                 update = diff >>> ALPHA_SHIFT;  // Arithmetic right shift
                 ema_reg <= ema_reg + update;

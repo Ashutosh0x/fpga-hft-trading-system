@@ -93,7 +93,7 @@ module transformer_attention
         end else if (enable && input_valid) begin
             // Query: only for latest token (index 0)
             for (int j = 0; j < D_KEY; j++) begin
-                automatic logic signed [15:0] sum = 0;
+                logic signed [15:0] sum = 0;
                 for (int i = 0; i < D_MODEL; i++)
                     sum = sum + input_seq[0][i] * Wq[i][j];
                 q_vec[j] <= sum;
@@ -102,13 +102,13 @@ module transformer_attention
             // Keys and Values: for all tokens in sequence
             for (int t = 0; t < SEQ_LEN; t++) begin
                 for (int j = 0; j < D_KEY; j++) begin
-                    automatic logic signed [15:0] sum = 0;
+                    logic signed [15:0] sum = 0;
                     for (int i = 0; i < D_MODEL; i++)
                         sum = sum + input_seq[t][i] * Wk[i][j];
                     k_vecs[t][j] <= sum;
                 end
                 for (int j = 0; j < D_VALUE; j++) begin
-                    automatic logic signed [15:0] sum = 0;
+                    logic signed [15:0] sum = 0;
                     for (int i = 0; i < D_MODEL; i++)
                         sum = sum + input_seq[t][i] * Wv[i][j];
                     v_vecs[t][j] <= sum;
@@ -143,10 +143,10 @@ module transformer_attention
             // And K normalizer: Σ_t φ(K_t)  [D_KEY vector]
             // Then: output = φ(Q) · KV_accum / (φ(Q) · K_norm)
 
-            automatic logic signed [31:0] kv_accum [D_KEY-1:0][D_VALUE-1:0];
-            automatic logic signed [31:0] k_norm [D_KEY-1:0];
-            automatic logic signed [31:0] numerator [D_VALUE-1:0];
-            automatic logic signed [31:0] denominator;
+            logic signed [31:0] kv_accum [D_KEY-1:0][D_VALUE-1:0];
+            logic signed [31:0] k_norm [D_KEY-1:0];
+            logic signed [31:0] numerator [D_VALUE-1:0];
+            logic signed [31:0] denominator;
 
             // Initialize accumulators
             for (int d = 0; d < D_KEY; d++) begin
@@ -158,7 +158,7 @@ module transformer_attention
             // Accumulate over sequence
             for (int t = 0; t < SEQ_LEN; t++) begin
                 for (int d = 0; d < D_KEY; d++) begin
-                    automatic logic signed [15:0] phi_k = kernel_phi(k_vecs[t][d]);
+                    logic signed [15:0] phi_k = kernel_phi(k_vecs[t][d]);
                     k_norm[d] = k_norm[d] + phi_k;
                     for (int v = 0; v < D_VALUE; v++)
                         kv_accum[d][v] = kv_accum[d][v] + phi_k * v_vecs[t][v];
@@ -171,7 +171,7 @@ module transformer_attention
                 numerator[v] = 0;
 
             for (int d = 0; d < D_KEY; d++) begin
-                automatic logic signed [15:0] phi_q = kernel_phi(q_vec[d]);
+                logic signed [15:0] phi_q = kernel_phi(q_vec[d]);
                 denominator = denominator + phi_q * k_norm[d];
                 for (int v = 0; v < D_VALUE; v++)
                     numerator[v] = numerator[v] + phi_q * kv_accum[d][v];
@@ -202,7 +202,7 @@ module transformer_attention
             s3_valid <= 1'b0;
         end else if (enable && s2_valid) begin
             for (int j = 0; j < D_MODEL; j++) begin
-                automatic logic signed [15:0] sum = 0;
+                logic signed [15:0] sum = 0;
                 for (int i = 0; i < D_VALUE; i++)
                     sum = sum + attn_out[i] * Wo[i][j];
                 // Residual connection (add input)
@@ -225,10 +225,10 @@ module transformer_attention
             for (int j = 0; j < OUTPUT_DIM; j++) logits[j] <= '0;
         end else if (enable && s3_valid) begin
             // FFN Layer 1: proj_out → hidden (with ReLU)
-            automatic logic signed [15:0] ff_hidden [D_FF-1:0];
-            automatic logic signed [15:0] ff_out [OUTPUT_DIM-1:0];
-            automatic logic signed [15:0] max_val;
-            automatic int max_idx;
+            logic signed [15:0] ff_hidden [D_FF-1:0];
+            logic signed [15:0] ff_out [OUTPUT_DIM-1:0];
+            logic signed [15:0] max_val;
+            int max_idx;
 
             for (int j = 0; j < D_FF; j++) begin
                 ff_hidden[j] = 0;

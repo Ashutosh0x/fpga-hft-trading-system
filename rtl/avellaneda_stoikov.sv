@@ -116,8 +116,8 @@ module avellaneda_stoikov
             if (ln_lut[i] == 0 && i > 0) begin
                 // Linear interpolation approximation: ln(1+x) ≈ x for small x
                 // Use Taylor: ln(1+x) ≈ x - x²/2
-                automatic int x_fp = (i * 32'sh00040000) >> 8; // x in Q16.16
-                automatic int x_sq = (x_fp * x_fp) >> 16;
+                int x_fp = (i * 32'sh00040000) >> 8; // x in Q16.16
+                int x_sq = (x_fp * x_fp) >> 16;
                 ln_lut[i] = x_fp - (x_sq >> 1);
             end
         end
@@ -127,7 +127,7 @@ module avellaneda_stoikov
     function automatic fp_t lookup_ln(input fp_t x);
         // x is Q16.16, map to LUT index [0,255]
         // LUT covers [0, 4.0], so index = x * 256 / 4 = x * 64
-        automatic logic [31:0] idx;
+        logic [31:0] idx;
         if (x <= 0) return 0;
         idx = (x * 64) >> 16;  // Convert Q16.16 to integer index
         if (idx > 255) idx = 255;
@@ -158,8 +158,8 @@ module avellaneda_stoikov
                 vol_initialized <= 1'b1;
             end else begin
                 // Return = current_mid - prev_mid
-                automatic fp_t ret = $signed(tob.mid_price) - $signed(prev_mid);
-                automatic fp_t ret_sq = fp_mul(ret, ret);
+                fp_t ret = $signed(tob.mid_price) - $signed(prev_mid);
+                fp_t ret_sq = fp_mul(ret, ret);
                 // EMA update: vol_sq += (ret_sq - vol_sq) >> VOL_EMA_SHIFT
                 vol_sq   <= vol_sq + ((ret_sq - vol_sq) >>> VOL_EMA_SHIFT);
                 prev_mid <= tob.mid_price;
@@ -180,8 +180,8 @@ module avellaneda_stoikov
             s1_vol_spread_term  <= '0;
         end else if (enable && tob_valid && tob.valid) begin
             // inventory_penalty = q * γ * σ² * (T-t)
-            automatic fp_t gamma_vol = fp_mul(gamma, vol_sq);        // γ * σ²
-            automatic fp_t time_adj  = fp_mul(gamma_vol, time_remaining); // γ*σ²*(T-t)
+            fp_t gamma_vol = fp_mul(gamma, vol_sq);        // γ * σ²
+            fp_t time_adj  = fp_mul(gamma_vol, time_remaining); // γ*σ²*(T-t)
 
             s1_inventory_penalty <= fp_mul({{16{position[31]}}, position[15:0], 16'b0} >>> 16,
                                            time_adj);
@@ -206,10 +206,10 @@ module avellaneda_stoikov
             s2_reservation <= s1_mid - s1_inventory_penalty;
 
             // Optimal spread: δ = γ*σ²*(T-t) + (2/γ) * ln(1 + γ/κ)
-            automatic fp_t gamma_over_kappa = fp_div(gamma, kappa);
-            automatic fp_t ln_term = lookup_ln(gamma_over_kappa);
-            automatic fp_t two_over_gamma = fp_div(32'sh00020000, gamma); // 2.0 / γ
-            automatic fp_t log_component = fp_mul(two_over_gamma, ln_term);
+            fp_t gamma_over_kappa = fp_div(gamma, kappa);
+            fp_t ln_term = lookup_ln(gamma_over_kappa);
+            fp_t two_over_gamma = fp_div(32'sh00020000, gamma); // 2.0 / γ
+            fp_t log_component = fp_mul(two_over_gamma, ln_term);
 
             s2_spread <= s1_vol_spread_term + log_component;
             s2_valid  <= 1'b1;
@@ -233,14 +233,14 @@ module avellaneda_stoikov
             prev_ask       <= '0;
             quoting_active <= 1'b0;
         end else if (enable && s2_valid) begin
-            automatic fp_t half_spread = s2_spread >>> 1;  // δ/2
-            automatic fp_t my_bid = s2_reservation - half_spread;
-            automatic fp_t my_ask = s2_reservation + half_spread;
-            automatic logic pos_ok;
+            fp_t half_spread = s2_spread >>> 1;  // δ/2
+            fp_t my_bid = s2_reservation - half_spread;
+            fp_t my_ask = s2_reservation + half_spread;
+            logic pos_ok;
 
             // Convert from Q16.16 back to integer price (ticks)
-            automatic price_t bid_price = my_bid[31:16]; // Integer part
-            automatic price_t ask_price = my_ask[31:16];
+            price_t bid_price = my_bid[31:16]; // Integer part
+            price_t ask_price = my_ask[31:16];
 
             // Position safety check
             pos_ok = ($signed(position) > -$signed(POSITION_LIMIT)) &&
