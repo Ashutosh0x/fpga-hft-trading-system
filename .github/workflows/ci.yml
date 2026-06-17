@@ -50,7 +50,10 @@ jobs:
             rtl/order_generator.sv \
             rtl/session_override.sv \
             rtl/trading_system_top.sv \
-            rtl/smartnic_top.sv
+            rtl/smartnic_top.sv \
+            rtl/sparse_neural_inference.sv \
+            rtl/fp8_compute_unit.sv \
+            rtl/inline_packet_filter.sv
 
       - name: Build basic testbench with Verilator
         run: |
