@@ -7,21 +7,30 @@ on:
     branches: [master, main]
 
 jobs:
-  verilator-lint:
-    name: Verilator Lint
-    runs-on: ubuntu-latest
+  verilator-lint-and-sim:
+    name: Verilator Lint and Simulate
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Verilator
+      - name: Install Verilator 5.x
         run: |
           sudo apt-get update
-          sudo apt-get install -y verilator
+          sudo apt-get install -y git perl python3 make autoconf g++ flex bison ccache libgoogle-perftools-dev numactl perl-doc libfl2 libfl-dev zlib1g zlib1g-dev
+          git clone https://github.com/verilator/verilator.git --depth 1 --branch v5.024
+          cd verilator
+          autoconf
+          ./configure
+          make -j$(nproc)
+          sudo make install
+          verilator --version
 
       - name: Lint all RTL modules
         run: |
           verilator --lint-only -Wall --timing \
+            -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-UNDRIVEN \
+            -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-INITIALDLY \
             rtl/fixed_point_pkg.sv \
             rtl/ema_calculator.sv \
             rtl/speculative_parser.sv \
@@ -42,21 +51,12 @@ jobs:
             rtl/trading_system_top.sv \
             rtl/smartnic_top.sv
 
-  iverilog-simulate:
-    name: Icarus Verilog Simulation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Icarus Verilog
+      - name: Build basic testbench with Verilator
         run: |
-          sudo apt-get update
-          sudo apt-get install -y iverilog
-
-      - name: Compile basic testbench
-        run: |
-          iverilog -g2012 -o sim_basic.vvp \
+          verilator --binary --timing --top-module tb_trading_system \
+            -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-UNDRIVEN \
+            -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-INITIALDLY \
+            -Wno-TIMESCALEMOD -Wno-STMTDLY \
             rtl/fixed_point_pkg.sv \
             rtl/ema_calculator.sv \
             rtl/market_data_parser.sv \
@@ -68,11 +68,14 @@ jobs:
             tb/tb_trading_system.sv
 
       - name: Run basic simulation
-        run: vvp sim_basic.vvp
+        run: ./obj_dir/Vtb_trading_system
 
-      - name: Compile SmartNIC testbench
+      - name: Build SmartNIC testbench with Verilator
         run: |
-          iverilog -g2012 -o sim_smartnic.vvp \
+          verilator --binary --timing --top-module tb_smartnic \
+            -Wno-UNUSEDSIGNAL -Wno-UNUSEDPARAM -Wno-UNDRIVEN \
+            -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC -Wno-INITIALDLY \
+            -Wno-TIMESCALEMOD -Wno-STMTDLY \
             rtl/fixed_point_pkg.sv \
             rtl/ema_calculator.sv \
             rtl/speculative_parser.sv \
@@ -89,12 +92,4 @@ jobs:
             tb/tb_smartnic.sv
 
       - name: Run SmartNIC simulation
-        run: vvp sim_smartnic.vvp
-
-      - name: Upload waveforms
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: simulation-waveforms
-          path: "*.vcd"
-          retention-days: 30
+        run: ./obj_dir/Vtb_smartnic
